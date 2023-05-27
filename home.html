@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 30px;
+        border-bottom: 1px solid;
+      }
+
+      nav div {
+        display: flex;
+        width: 50%;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: black;
+      }
+
+      form {
+        border: 1px solid black;
+        padding: 50px 30px;
+        /* height: 350px; */
+        width: 250px;
+        margin: 0px auto;
+      }
+
+      form input,
+      form button {
+        width: 100%;
+        border: 1px solid black;
+        border-radius: 5px;
+        margin-bottom: 40px;
+        padding: 20px 2px;
+        text-align: center;
+      }
+      #buttons {
+        width: 313px;
+        margin: 50px auto 0;
+        display: flex;
+        justify-content: space-between;
+      }
+      #buttons button {
+        width: 50%;
+        border: 1px solid white;
+        border-radius: 0%;
+        padding: 20px;
+        cursor: pointer;
+        background-color: white;
+        color: black;
+      }
+      #buttons button:first-child,
+      form button {
+        background-color: black;
+        color: white;
+      }
+
+      #signup div {
+        display: flex;
+        /* width: 120%; */
+      }
+      #signup div input {
+        width: fit-content;
+        margin-right: 20px;
+      }
+      #signup {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div>
+        <h1>Masai Hospital</h1>
+      </div>
+      <div>
+        <a href="./home.html">Home Page</a>
+        <a href="" id="doctor_dash">Doctor's Dashboard</a>
+        <a href="./appointment.html">Book Apointments</a>
+      </div>
+    </nav>
+
+    <section>
+      <div id="buttons">
+        <button>Login</button>
+        <button>Register</button>
+      </div>
+      <form id="login">
+        <input type="email" id="login-email" placeholder="Email" />
+        <input type="password" id="login-pass" placeholder="Password" />
+        <button type="submit">Login</button>
+      </form>
+      <form id="signup">
+        <input type="text" id="name" placeholder="Username" />
+        <input type="email" id="signup-email" placeholder="Email" />
+        <input type="password" id="signup-pass" placeholder="Password" />
+        <div>
+          <input type="checkbox" name="doctor" id="doctor" />
+          <label for="doctor">Are you a doctor ?</label>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </section>
+  </body>
+</html>
+<script>
+  let toggle1 = document.querySelector("#buttons button:first-child");
+  let toggle2 = document.querySelector("#buttons button:last-child");
+  let form1 = document.querySelector("#login");
+  let form2 = document.querySelector("#signup");
+  let login_email = document.querySelector("#login-email");
+  let login_pass = document.querySelector("#login-pass");
+  let signup_email = document.querySelector("#signup-email");
+  let signup_pass = document.querySelector("#signup-pass");
+  let signup_name = document.querySelector("#name");
+  let doctor_dash = document.querySelector("#doctor_dash");
+  let doctor_checkbox = document.querySelector("#doctor");
+
+  doctor_dash.addEventListener("click", (e) => {
+    e.preventDefault();
+    let doctor = localStorage.getItem("doctor");
+    if (doctor === "true") {
+      window.location.href = "doctor.html";
+    } else {
+      alert("You are not authorised ");
+    }
+  });
+
+  toggle1.addEventListener("click", (e) => {
+    toggle2.style.backgroundColor = "white";
+    toggle2.style.color = "black";
+    e.target.style.backgroundColor = "black";
+    e.target.style.color = "white";
+    form1.style.display = "block";
+    form2.style.display = "none";
+    console.log(form1.style.display);
+  });
+
+  toggle2.addEventListener("click", (e) => {
+    toggle1.style.backgroundColor = "white";
+    toggle1.style.color = "black";
+    e.target.style.backgroundColor = "black";
+    e.target.style.color = "white";
+    form2.style.display = "block";
+    form1.style.display = "none";
+    console.log(form1.style.display);
+  });
+
+  form1.addEventListener("submit", loginFn);
+  form2.addEventListener("submit", signupFn);
+
+  async function loginFn(e) {
+    e.preventDefault();
+
+    let res = await fetch("https://masai-hospital-vrp5.onrender.com/users");
+    res = await res.json();
+
+    let user = res.find(
+      (el) => el.email === login_email.value && el.password === login_pass.value
+    );
+
+    if (user) {
+      localStorage.setItem("doctor", user.doctor);
+      alert("login successful");
+    } else {
+      alert("login failed");
+    }
+  }
+
+  function signupFn(e) {
+    e.preventDefault();
+
+    let user = {
+      name: signup_name.value,
+      email: signup_email.value,
+      password: signup_pass.value,
+      doctor: doctor_checkbox.checked,
+    };
+    console.log(user);
+
+    fetch('https://masai-hospital-vrp5.onrender.com/users', {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }
+</script>

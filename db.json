@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "name": "Anubhav",
+      "email": "a@gmail.com",
+      "password": "a123",
+      "doctor": true,
+      "id": 1
+    },
+    {
+      "name": "Dixit",
+      "email": "d@gmail.com",
+      "password": "d123",
+      "doctor": false,
+      "id": 2
+    }
+  ],
+  "appointments": [
+    {
+      "id": 2,
+      "name": "Mark",
+      "image": "https://example.com/doctor-image.jpg",
+      "specialization": "Pediatrician",
+      "experience": "5",
+      "location": "Chicago",
+      "date": "2023-04-06T09:30:00.000Z",
+      "slots": "1",
+      "fee": "100"
+    },
+    {
+      "id": 3,
+      "name": "Jane Doe",
+      "image": "https://example.com/doctor-image.jpg",
+      "specialization": "Dermatologist",
+      "experience": 10,
+      "location": "Los Angeles",
+      "date": "2023-04-05T12:00:00.000Z",
+      "slots": 2,
+      "fee": 150
+    }
+  ]
+}

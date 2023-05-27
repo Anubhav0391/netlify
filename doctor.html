@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      form {
+        border: 1px solid black;
+        padding: 50px 30px;
+        /* height: 350px; */
+        width: 250px;
+        margin: 0px auto;
+        display: none;
+      }
+
+      form input,
+      form button {
+        width: 100%;
+        border: 1px solid black;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        padding: 20px 2px;
+        text-align: center;
+      }
+
+      form button {
+        background-color: black;
+        color: white;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 30px;
+        border-bottom: 1px solid;
+      }
+
+      nav div {
+        display: flex;
+        width: 50%;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: black;
+      }
+      table,
+      td,
+      th {
+        border: 1px solid;
+        width: fit-content;
+        margin: 30px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div>
+        <h1>Masai Hospital</h1>
+      </div>
+      <div>
+        <a href="./home.html">Home Page</a>
+        <a href="">Doctor's Dashboard</a>
+        <a href="./appointment.html">Book Apointments</a>
+      </div>
+    </nav>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Doctor</th>
+            <th>Specialization</th>
+            <th>Experience</th>
+            <th>Location</th>
+            <th>Slots</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Appointments</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="edit">
+      <form>
+        <input type="text" id="name" />
+        <input type="text" id="image" />
+        <input type="text" id="specialization" />
+        <input type="text" id="experience" />
+        <input type="text" id="location" />
+        <input type="text" id="slots" />
+        <input type="text" id="fee" />
+        <button type="submit" id="editBtn"></button>
+      </form>
+    </div>
+  </body>
+</html>
+<script>
+  let tbody = document.querySelector("tbody");
+  let form = document.querySelector("form");
+
+  fetchData();
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    fetch(
+      `https://masai-hospital-vrp5.onrender.com/appointments/${+form.editBtn.innerText.split(
+        " "
+      )[1]}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name.value,
+          image: form.image.value,
+          specialization: form.specialization.value,
+          experience: form.experience.value,
+          location: form.location.value,
+          slots: form.slots.value,
+          fee: form.fee.value,
+        }),
+      }
+    ).then((res) => fetchData());
+
+    console.log(+form.editBtn.innerText.split(" ")[1]);
+  });
+
+  function fetchData() {
+    fetch("https://masai-hospital-vrp5.onrender.com/appointments")
+      .then((res) => res.json())
+      .then((res) => renderList(res));
+  }
+
+  function renderList(data) {
+    tbody.innerHTML = null;
+
+    data.forEach((el, i) => {
+      let tr = document.createElement("tr");
+
+      let td1 = document.createElement("td");
+      td1.innerText = el.name;
+
+      let td2 = document.createElement("td");
+      td2.innerText = el.specialization;
+
+      let td3 = document.createElement("td");
+      td3.innerText = el.experience;
+
+      let td4 = document.createElement("td");
+      td4.innerText = el.location;
+
+      let td5 = document.createElement("td");
+      td5.innerText = el.slots;
+
+      let td6 = document.createElement("td");
+      td6.innerText = "Edit";
+      td6.addEventListener("click", () => editDoctor(el.id));
+
+      let td7 = document.createElement("td");
+      td7.innerText = "Delete";
+      td7.addEventListener("click", () => deleteDoctor(el.id));
+
+      let td8 = document.createElement("td");
+      td8.innerText = "Appointments";
+
+      tr.append(td1, td2, td3, td4, td5, td6, td7, td8);
+      tbody.append(tr);
+    });
+
+    function editDoctor(id) {
+      console.log(id);
+      form.style.display = "block";
+
+      fetch(`https://masai-hospital-vrp5.onrender.com/appointments/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+          form.name.value = res.name;
+          form.image.value = res.image;
+          form.specialization.value = res.specialization;
+          form.experience.value = res.experience;
+          form.location.value = res.location;
+          form.slots.value = res.slots;
+          form.fee.value = res.fee;
+          form.editBtn.innerText = `Edit ${id}`;
+        });
+    }
+
+    function deleteDoctor(id) {
+      console.log(id);
+      fetch(`https://masai-hospital-vrp5.onrender.com/appointments/${id}`, {
+        method: "DELETE",
+      }).then((res) => fetchData());
+    }
+  }
+</script>
